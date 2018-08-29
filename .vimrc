@@ -41,6 +41,11 @@ if dein#load_state('/Users/afonsodelgado/.cache/dein')
     call dein#add('arcticicestudio/nord-vim')
     call dein#add('kristiandupont/shades-of-teal')
     call dein#add('valloric/matchtagalways')
+    call dein#add('terryma/vim-multiple-cursors')
+    call dein#add('sheerun/vim-polyglot')
+    call dein#add('trevordmiller/nova-vim')
+    call dein#add('yuttie/comfortable-motion.vim')
+    call dein#add('tpope/vim-surround')
 
     " Required:
     call dein#end()
@@ -64,7 +69,7 @@ syntax enable
 set mouse=a
 set clipboard=unnamed
 set cursorline
-set number
+" set number
 
 " Indentation stuff
 set expandtab
@@ -95,7 +100,8 @@ endif
 
 " Colorscheme settings
 set background=dark
-colorscheme shades-of-teal
+" colorscheme nova
+colorscheme nord
 let g:airline_theme='nord'
 
 " NerdTree mappings
@@ -106,17 +112,18 @@ nmap s <Plug>(easymotion-overwin-f2)
 
 " Vim FZF mappings
 set rtp+=/usr/local/opt/fzf
-nnoremap <C-p> :FZF<CR>
+" nnoremap <C-p> :FZF<CR>
+nnoremap <C-p> :GFiles<CR>
 
 " Ale fixers and mappings
 let g:ale_fixers = {
             \ 'javascript': ['eslint']
             \ }
 let g:ale_sign_column_always = 1
-let g:airline#extensions#ale#enabled = 1
+" let g:airline#extensions#ale#enabled = 1
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
-nmap <leader>d <Plug>(ale_fix)
+nmap <leader>l <Plug>(ale_fix)
 
 " Deoplete settings
 let g:deoplete#enable_at_startup = 1
@@ -129,6 +136,7 @@ let g:jsx_ext_required = 0
 
 " NERDCommenter settings
 let g:NERDSpaceDelims = 1
+let g:NERDDefaultAlign = 'start'
 
 let g:mta_filetypes = {
     \ 'html' : 1,
