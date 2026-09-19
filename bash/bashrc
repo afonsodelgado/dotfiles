@@ -1,0 +1,33 @@
+# Sourced from ~/.bashrc. Adapted from Omarchy's default/bash/*.
+DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
+
+source "$DOTFILES/shell/envs.sh"
+
+# Interactive shells only from here on
+[[ $- != *i* ]] && return
+
+# History
+shopt -s histappend
+HISTCONTROL=ignoreboth
+HISTSIZE=32768
+HISTFILESIZE="${HISTSIZE}"
+
+# Homebrew bash-completion
+if [[ ! -v BASH_COMPLETION_VERSINFO ]]; then
+  for f in /opt/homebrew/etc/profile.d/bash_completion.sh /usr/local/etc/profile.d/bash_completion.sh /usr/share/bash-completion/bash_completion; do
+    [[ -f $f ]] && source "$f" && break
+  done
+fi
+
+# Command hashing off for mise
+set +h
+
+source "$DOTFILES/shell/aliases.sh"
+source "$DOTFILES/shell/functions.sh"
+
+command -v mise &> /dev/null && eval "$(mise activate bash)"
+command -v starship &> /dev/null && [[ ${TERM:-} != "dumb" ]] && eval "$(starship init bash)"
+command -v zoxide &> /dev/null && eval "$(zoxide init bash)"
+command -v fzf &> /dev/null && eval "$(fzf --bash)"
+
+bind -f "$DOTFILES/bash/inputrc"

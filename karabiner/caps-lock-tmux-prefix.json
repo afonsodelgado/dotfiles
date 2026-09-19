@@ -1,0 +1,21 @@
+{
+  "title": "Caps Lock as tmux prefix",
+  "rules": [
+    {
+      "description": "Caps Lock sends Ctrl+Space in Alacritty and Ghostty (tmux prefix)",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": { "key_code": "caps_lock", "modifiers": { "optional": ["any"] } },
+          "to": [{ "key_code": "spacebar", "modifiers": ["left_control"] }],
+          "conditions": [
+            {
+              "type": "frontmost_application_if",
+              "bundle_identifiers": ["^org\\.alacritty$", "^com\\.mitchellh\\.ghostty$"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
