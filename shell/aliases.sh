@@ -40,7 +40,4 @@ alias t='tmux attach || tmux new -s Work'
 n() { if [ "$#" -eq 0 ]; then command nvim . ; else command nvim "$@"; fi; }
 
 # Git
-alias g='git'
-alias gcm='git commit -m'
-alias gcam='git commit -a -m'
-alias gcad='git commit -a --amend'
+source "${DOTFILES:-$HOME/.dotfiles}/shell/git-aliases.sh"

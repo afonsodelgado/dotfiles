@@ -33,7 +33,7 @@ Then:
 | `tmux/tmux.conf` | Prefix Ctrl+Space, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. |
 | `nvim/` | LazyVim config | Minus Omarchy's theme hot-reload. `jk` leaves insert mode. |
 | `starship.toml` | Prompt | Unchanged. |
-| `shell/` | Aliases and tmux layout functions shared by bash and zsh | `tdl claude` sets up editor + assistant + terminal panes. |
+| `shell/` | Aliases, git aliases, and tmux layout functions shared by bash and zsh | `git-aliases.sh` is the oh-my-zsh git set (gst, gcmsg, gco...). Also sourced on the Linux machine. |
 | `bash/`, `zsh/` | Shell entry points | zsh is the macOS default and gets the same history search and completion feel. |
 | `karabiner/` | Caps Lock tap sends Ctrl+Space in terminals | Same behaviour as the Hyprland bind on Linux. |
 | `Brewfile` | Everything the above needs | |
