@@ -6,7 +6,8 @@ a fresh Omarchy machine ends up identical.
 
 `install.sh` detects the platform (macOS, Omarchy, other Linux), symlinks configs into `~/.config`,
 hooks the shell, installs packages where it can, and sets up Caps Lock as the tmux prefix. It is
-safe to re-run. Anything it replaces is moved to `*.bak`.
+safe to re-run. Anything it replaces is moved to `*.bak`. It ends with a check of tools, versions
+and links; `install.sh --check` runs only that.
 
 ## Installing on macOS
 
@@ -17,13 +18,45 @@ git clone https://github.com/afonsodelgado/dotfiles ~/.dotfiles
 ~/.dotfiles/install.sh
 ```
 
-After the Homebrew installer finishes, run the two `eval` lines it prints (or open a new terminal)
-before the last command, otherwise `brew bundle` is skipped. Then:
+The installer finds Homebrew on its own, installs the Brewfile, links the configs, appends one
+line to `~/.zshrc`, and ends with a check of what is installed and linked. Fix any `WARN` line it
+prints. You can re-run just that check at any time:
 
-1. Open Ghostty (or Alacritty). Start tmux with `t`.
+```bash
+~/.dotfiles/install.sh --check
+```
+
+Then:
+
+1. Open Ghostty (or Alacritty). It runs zsh, the macOS login shell; that is expected, and
+   `zsh/zshrc` gives it the same aliases, prompt and tools as bash on Linux. Start tmux with `t`.
 2. Open Karabiner-Elements, go to Complex Modifications, Add rule, and enable
    "Caps Lock as tmux prefix". Grant it Input Monitoring when asked.
-3. Run `nvim`. LazyVim installs its plugins on first launch.
+3. Run `nvim`. LazyVim installs its plugins on first launch; wait for it to finish and restart.
+
+### If it does not look like the Linux machine
+
+Run `~/.dotfiles/install.sh --check` first. Beyond what it reports:
+
+- **tmux still has Ctrl+b as prefix, or nvim is plain.** The configs are not being read. The
+  usual causes: an old `~/.tmux.conf` (tmux then ignores `~/.config/tmux/tmux.conf`), or the
+  install stopped early before linking anything. Both are handled by re-running `install.sh`.
+- **`nvim` or `tmux` is an old version, or not found.** Homebrew is not on PATH in that shell.
+  An old `~/.zshrc` that starts with `PATH=...` wipes it. The dotfiles now re-add Homebrew
+  themselves, but the cleanest fix is to delete that line and anything else you no longer want
+  from `~/.zshrc`, keeping only the `source` line the installer added. oh-my-zsh is not needed:
+  its git aliases are in `shell/git-aliases.sh`.
+- **Ctrl+Space does nothing.** macOS grabs it for "Select the previous input source". Turn that
+  off in System Settings > Keyboard > Keyboard Shortcuts > Input Sources.
+- **Alt shortcuts type odd characters.** Option is not acting as Alt. Make sure the Ghostty
+  config is the linked one (`macos-option-as-alt = true`); a `~/Library/Application
+  Support/com.mitchellh.ghostty/config` file would take precedence over `~/.config/ghostty`.
+- **Alt+Left/Right do not switch tmux windows.** Ghostty binds those to word movement on macOS
+  by default. The linked config unbinds them; restart Ghostty after linking.
+- **Yank in nvim does not reach the system clipboard.** On macOS Neovim uses pbcopy/pbpaste
+  directly, also inside tmux. If `:checkhealth` shows no clipboard tool, something shadows them.
+- **Shell keys feel like vi.** zsh switches to vi mode when `EDITOR` contains "vi". The zshrc
+  forces emacs mode; if you see vi behaviour, the dotfiles line in `~/.zshrc` is not running.
 
 ## Installing on Linux
 

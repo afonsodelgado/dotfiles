@@ -5,6 +5,10 @@ source "$DOTFILES/shell/envs.sh"
 
 [[ -o interactive ]] || return
 
+# Emacs line editing. zsh defaults to vi mode when EDITOR contains "vi" (nvim does),
+# which changes Ctrl+A/E/R/W and the arrow keys. bash and Omarchy use emacs mode.
+bindkey -e
+
 # History
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=32768
@@ -22,6 +26,8 @@ zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 bindkey '^[[A' up-line-or-beginning-search
 bindkey '^[[B' down-line-or-beginning-search
+bindkey '^[OA' up-line-or-beginning-search   # application-mode variant, sent inside tmux
+bindkey '^[OB' down-line-or-beginning-search
 
 source "$DOTFILES/shell/aliases.sh"
 source "$DOTFILES/shell/functions.sh"

@@ -40,13 +40,15 @@ tsl() {
   local -a panes
 
   local first_pane="$TMUX_PANE"
+  local last_pane="$first_pane"
   tmux rename-window -t "$first_pane" "$(basename "$current_dir")"
   panes+=("$first_pane")
 
   while (( ${#panes[@]} < count )); do
     local new_pane
-    new_pane=$(tmux split-window -h -t "${panes[-1]}" -c "$current_dir" -P -F '#{pane_id}')
+    new_pane=$(tmux split-window -h -t "$last_pane" -c "$current_dir" -P -F '#{pane_id}')
     panes+=("$new_pane")
+    last_pane="$new_pane"
     tmux select-layout -t "$first_pane" tiled
   done
 

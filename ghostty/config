@@ -33,6 +33,10 @@ keybind = control+insert=copy_to_clipboard
 keybind = shift+enter=csi:13;2u
 # Legacy encoding sends Alt+Shift+Enter the same as Alt+Enter; send CSI-u so tmux can match M-S-Enter.
 keybind = alt+shift+enter=csi:13;4u
+# On macOS Ghostty maps Option+Left/Right to word movement (Esc b / Esc f) by default,
+# so tmux never sees M-Left/M-Right for window switching. Drop those two defaults.
+keybind = alt+left=unbind
+keybind = alt+right=unbind
 
 # Slow down mouse scrolling
 mouse-scroll-multiplier = 0.95
