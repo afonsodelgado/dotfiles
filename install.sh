@@ -139,6 +139,7 @@ run_checks() {
     warn "$HOME/.tmux.conf exists; tmux reads it instead of $CONFIG/tmux/tmux.conf. Remove or rename it."
   fi
   check_link "$CONFIG/tmux/tmux.conf" "$DOTFILES/tmux/tmux.conf"
+  check_link "$CONFIG/tmux/latch-prefix.sh" "$DOTFILES/tmux/latch-prefix.sh"
   check_link "$CONFIG/starship.toml" "$DOTFILES/starship.toml"
 
   if [[ $PLATFORM == omarchy ]]; then
@@ -155,7 +156,7 @@ run_checks() {
   fi
 
   if [[ $PLATFORM == macos ]]; then
-    if [[ -f $CONFIG/karabiner/karabiner.json ]] && grep -q 'Caps Lock sends Ctrl+Space' "$CONFIG/karabiner/karabiner.json"; then
+    if [[ -f $CONFIG/karabiner/karabiner.json ]] && grep -q 'Caps Lock sends Ctrl+B' "$CONFIG/karabiner/karabiner.json"; then
       ok "Karabiner rule enabled"
       if pgrep -q karabiner_grabber; then
         ok "Karabiner grabber running"
@@ -170,8 +171,8 @@ run_checks() {
     else
       warn "Karabiner-Elements not installed (brew install --cask karabiner-elements)"
     fi
-    echo "  note    If Ctrl+Space does nothing: System Settings > Keyboard > Keyboard Shortcuts > Input Sources,"
-    echo "          untick 'Select the previous input source'. macOS grabs Ctrl+Space when that is on."
+    echo "  note    The rule sends Ctrl+B, not Ctrl+Space: macOS binds Ctrl+Space to 'Select the previous"
+    echo "          input source' and swallows it before any terminal sees it. Ctrl+B is tmux prefix2."
   fi
 
   if [[ $STATUS == 0 ]]; then
@@ -238,6 +239,7 @@ if [[ -e $HOME/.tmux.conf || -L $HOME/.tmux.conf ]]; then
   echo "  backup  $HOME/.tmux.conf -> $HOME/.tmux.conf.bak (it would shadow the tmux.conf in ~/.config)"
 fi
 link "$DOTFILES/tmux/tmux.conf" "$CONFIG/tmux/tmux.conf"
+link "$DOTFILES/tmux/latch-prefix.sh" "$CONFIG/tmux/latch-prefix.sh"
 link "$DOTFILES/starship.toml"  "$CONFIG/starship.toml"
 
 if [[ $PLATFORM == omarchy ]]; then
@@ -280,6 +282,7 @@ case $PLATFORM in
     KARABINER_JSON="$CONFIG/karabiner/karabiner.json"
     RULE="$DOTFILES/karabiner/caps-lock-tmux-prefix.json"
     mkdir -p "$KARABINER_DIR"
+<<<<<<< Updated upstream
     cp "$RULE" "$KARABINER_DIR/"
     # Karabiner reloads karabiner.json on change, so the rule can be enabled directly:
     # replace any earlier copy in the selected profile and append the current one.
@@ -295,6 +298,18 @@ case $PLATFORM in
     else
       echo "Karabiner rule copied. Open Karabiner-Elements once (it creates karabiner.json), then re-run install.sh to enable it."
     fi
+||||||| Stash base
+    cp "$DOTFILES/karabiner/caps-lock-tmux-prefix.json" "$KARABINER_DIR/"
+    echo "Karabiner rule copied. Enable it in Karabiner-Elements > Complex Modifications > Add rule."
+=======
+    cp "$DOTFILES/karabiner/caps-lock-tmux-prefix.json" "$KARABINER_DIR/"
+    if [[ -f $CONFIG/karabiner/karabiner.json ]]; then
+      echo "Karabiner rule copied. Enable it in Karabiner-Elements > Complex Modifications > Add rule."
+    else
+      "$DOTFILES/karabiner/write-profile.py" && echo "Karabiner profile written with the rule enabled."
+    fi
+    echo "Karabiner needs Input Monitoring and its driver approved on first launch."
+>>>>>>> Stashed changes
     ;;
   omarchy)
     link "$DOTFILES/hypr/caps_lock_tmux_prefix.lua" "$CONFIG/hypr/caps_lock_tmux_prefix.lua"

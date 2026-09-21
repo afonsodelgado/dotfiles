@@ -30,9 +30,18 @@ Then:
 
 1. Open Ghostty. It runs zsh, the macOS login shell; that is expected, and
    `zsh/zshrc` gives it the same aliases, prompt and tools as bash on Linux. Start tmux with `t`.
+<<<<<<< Updated upstream
 2. Open Karabiner-Elements once and approve it in System Settings > Privacy & Security (Input
    Monitoring, and the driver extension). Re-run `install.sh`: it writes the "Caps Lock as tmux
    prefix" rule straight into `karabiner.json`, so there is nothing to click in Add rule.
+||||||| Stash base
+2. Open Karabiner-Elements, go to Complex Modifications, Add rule, and enable
+   "Caps Lock as tmux prefix". Grant it Input Monitoring when asked.
+=======
+2. Open Karabiner-Elements once and grant it Input Monitoring and the driver extension when
+   asked. `install.sh` already writes the profile with "Caps Lock as tmux prefix" enabled, so
+   there is no rule to add by hand unless you already had a `karabiner.json`.
+>>>>>>> Stashed changes
 3. Run `nvim`. LazyVim installs its plugins on first launch; wait for it to finish and restart.
 
 ### If it does not look like the Linux machine
@@ -47,7 +56,9 @@ Run `~/.dotfiles/install.sh --check` first. Beyond what it reports:
   themselves, but the cleanest fix is to delete that line and anything else you no longer want
   from `~/.zshrc`, keeping only the `source` line the installer added. oh-my-zsh is not needed:
   its git aliases are in `shell/git-aliases.sh`.
-- **Ctrl+Space does nothing.** macOS grabs it for "Select the previous input source". Turn that
+- **Ctrl+Space does nothing.** macOS grabs it for "Select the previous input source", and it
+  never reaches the terminal. This is why Caps Lock sends Ctrl+B on macOS rather than
+  Ctrl+Space; both are bound as the tmux prefix. To use Ctrl+Space directly, turn that shortcut
   off in System Settings > Keyboard > Keyboard Shortcuts > Input Sources.
 - **Caps Lock does nothing but Ctrl+Space works.** Karabiner is not delivering the key. In
   order: re-run `install.sh` so the rule is in `karabiner.json` (the check confirms it), approve Karabiner in System Settings
@@ -116,7 +127,7 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 |---|---|---|
 | `ghostty/` | Terminal config | Option is set to act as Alt, which the tmux bindings rely on. Font size raised from 9 to 13. |
 | `themes/tokyo-night/` | Colors for terminals and btop | On Omarchy the live theme is used instead. Elsewhere `THEME=... ./install.sh` picks one. |
-| `tmux/tmux.conf` | Prefix Ctrl+Space, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. |
+| `tmux/tmux.conf` | Prefix Ctrl+Space and Ctrl+B, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. The prefix latches; `tmux/latch-prefix.sh` is what makes it. |
 | `nvim/` | LazyVim config | Minus Omarchy's theme hot-reload. `jk` leaves insert mode. |
 | `starship.toml` | Prompt | Unchanged. |
 | `shell/` | Aliases, git aliases, and tmux layout functions shared by bash and zsh | `git-aliases.sh` is the oh-my-zsh git set (gst, gcmsg, gco...). Also sourced on the Linux machine. |
@@ -124,12 +135,20 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 | `foot/` | Terminal config for Wayland Linux | Same padding and CSI-u bindings as the others. |
 | `hypr/` | Caps Lock as tmux prefix on Omarchy/Hyprland | Terminal windows only. Loaded by one `require` in `hyprland.lua`. |
 | `keyd/` | Caps Lock as tmux prefix on other Linux | System-wide. |
+<<<<<<< Updated upstream
 | `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty only. |
+||||||| Stash base
+| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty and Alacritty only. |
+=======
+| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty and Alacritty only. Sends Ctrl+B, since macOS keeps Ctrl+Space for itself. |
+>>>>>>> Stashed changes
 | `Brewfile` | Everything the above needs, on macOS | Linux uses pacman/apt inside `install.sh`. |
 
 ## Keys worth knowing
 
-tmux prefix is a tap of Caps Lock (or Ctrl+Space).
+tmux prefix is a tap of Caps Lock (Ctrl+B on macOS, Ctrl+Space on Linux; both work everywhere).
+It latches: one tap holds prefix mode open for as many commands as you like, and a second tap,
+or Escape, returns to typing. The status bar shows `PREFIX` while it is held.
 
 | Keys | Action |
 |---|---|
