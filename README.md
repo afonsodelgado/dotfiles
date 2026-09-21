@@ -28,7 +28,7 @@ prints. You can re-run just that check at any time:
 
 Then:
 
-1. Open Ghostty (or Alacritty). It runs zsh, the macOS login shell; that is expected, and
+1. Open Ghostty. It runs zsh, the macOS login shell; that is expected, and
    `zsh/zshrc` gives it the same aliases, prompt and tools as bash on Linux. Start tmux with `t`.
 2. Open Karabiner-Elements, go to Complex Modifications, Add rule, and enable
    "Caps Lock as tmux prefix". Grant it Input Monitoring when asked.
@@ -107,7 +107,7 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 
 | Path | What | Notes for macOS |
 |---|---|---|
-| `ghostty/`, `alacritty/` | Terminal config | Option is set to act as Alt, which the tmux bindings rely on. Font size raised from 9 to 13. |
+| `ghostty/` | Terminal config | Option is set to act as Alt, which the tmux bindings rely on. Font size raised from 9 to 13. |
 | `themes/tokyo-night/` | Colors for terminals and btop | On Omarchy the live theme is used instead. Elsewhere `THEME=... ./install.sh` picks one. |
 | `tmux/tmux.conf` | Prefix Ctrl+Space, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. |
 | `nvim/` | LazyVim config | Minus Omarchy's theme hot-reload. `jk` leaves insert mode. |
@@ -117,7 +117,7 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 | `foot/` | Terminal config for Wayland Linux | Same padding and CSI-u bindings as the others. |
 | `hypr/` | Caps Lock as tmux prefix on Omarchy/Hyprland | Terminal windows only. Loaded by one `require` in `hyprland.lua`. |
 | `keyd/` | Caps Lock as tmux prefix on other Linux | System-wide. |
-| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty and Alacritty only. |
+| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty only. |
 | `Brewfile` | Everything the above needs, on macOS | Linux uses pacman/apt inside `install.sh`. |
 
 ## Keys worth knowing

@@ -6,9 +6,9 @@
 #   ~/.dotfiles/install.sh --check    only report: tools, versions, links, shell hook
 #
 # Detects three platforms:
-#   macos    Homebrew packages, Ghostty/Alacritty, Karabiner for Caps Lock
+#   macos    Homebrew packages, Ghostty, Karabiner for Caps Lock
 #   omarchy  Only the personal layer: Omarchy already ships the rest
-#   linux    pacman/apt packages, foot/Ghostty/Alacritty, keyd for Caps Lock
+#   linux    pacman/apt packages, foot/Ghostty, keyd for Caps Lock
 #
 # Written for the bash 3.2 that macOS ships, so no -v tests, negative array indices or mapfile.
 set -euo pipefail
@@ -147,7 +147,6 @@ run_checks() {
   else
     check_link "$CONFIG/nvim" "$DOTFILES/nvim"
     check_link "$CONFIG/ghostty/config" "$DOTFILES/ghostty/config"
-    check_link "$CONFIG/alacritty/alacritty.toml" "$DOTFILES/alacritty/alacritty.toml"
     if [[ $PLATFORM == macos ]]; then
       check_line "$HOME/.zshrc" "export DOTFILES=\"$DOTFILES\"; source \"\$DOTFILES/zsh/zshrc\""
     else
@@ -241,8 +240,6 @@ if [[ $PLATFORM == omarchy ]]; then
   link "$HOME/.local/state/omarchy/current/theme/foot.ini"    "$CONFIG/foot/theme.ini"
 else
   link "$DOTFILES/nvim"                          "$CONFIG/nvim"
-  link "$DOTFILES/alacritty/alacritty.toml"      "$CONFIG/alacritty/alacritty.toml"
-  link "$DOTFILES/themes/$THEME/alacritty.toml"  "$CONFIG/alacritty/theme.toml"
   link "$DOTFILES/ghostty/config"                "$CONFIG/ghostty/config"
   link "$DOTFILES/themes/$THEME/ghostty.conf"    "$CONFIG/ghostty/theme.conf"
   link "$DOTFILES/themes/$THEME/btop.theme"      "$CONFIG/btop/themes/$THEME.theme"

@@ -1,8 +1,7 @@
 # brew bundle --file=Brewfile
 
-# Terminals (pick one, or keep both)
+# Terminal
 cask "ghostty"
-cask "alacritty"
 cask "font-jetbrains-mono-nerd-font"
 
 # Caps Lock -> tmux prefix (see karabiner/)
