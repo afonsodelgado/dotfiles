@@ -44,9 +44,12 @@ alias gpush='git push'
 alias gpf='git push --force-with-lease'
 alias grv='git remote -v'
 
-# Push / pull the current branch explicitly
-ggpush() { git push origin "$(git branch --show-current)" "$@"; }
-ggpull() { git pull origin "$(git branch --show-current)" "$@"; }
+# Push / pull the current branch explicitly. oh-my-zsh defines these two as aliases;
+# zsh expands aliases before parsing, so drop them first and use the `function`
+# keyword, which is never alias-expanded.
+unalias ggpush ggpull 2> /dev/null
+function ggpush { git push origin "$(git branch --show-current)" "$@"; }
+function ggpull { git pull origin "$(git branch --show-current)" "$@"; }
 
 # Stash
 alias gsta='git stash push'
