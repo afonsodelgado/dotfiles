@@ -277,9 +277,24 @@ fi
 case $PLATFORM in
   macos)
     KARABINER_DIR="$CONFIG/karabiner/assets/complex_modifications"
+    KARABINER_JSON="$CONFIG/karabiner/karabiner.json"
+    RULE="$DOTFILES/karabiner/caps-lock-tmux-prefix.json"
     mkdir -p "$KARABINER_DIR"
-    cp "$DOTFILES/karabiner/caps-lock-tmux-prefix.json" "$KARABINER_DIR/"
-    echo "Karabiner rule copied. Enable it in Karabiner-Elements > Complex Modifications > Add rule."
+    cp "$RULE" "$KARABINER_DIR/"
+    # Karabiner reloads karabiner.json on change, so the rule can be enabled directly:
+    # replace any earlier copy in the selected profile and append the current one.
+    if [[ -f $KARABINER_JSON ]] && command -v jq &> /dev/null; then
+      jq --slurpfile r "$RULE" '
+        ($r[0].rules[0]) as $rule
+        | .profiles |= map(
+            if .selected == true then
+              .complex_modifications.rules =
+                ((.complex_modifications.rules // []) | map(select(.description != $rule.description))) + [$rule]
+            else . end)' "$KARABINER_JSON" > "$KARABINER_JSON.tmp" && mv "$KARABINER_JSON.tmp" "$KARABINER_JSON"
+      echo "Karabiner rule enabled in $KARABINER_JSON."
+    else
+      echo "Karabiner rule copied. Open Karabiner-Elements once (it creates karabiner.json), then re-run install.sh to enable it."
+    fi
     ;;
   omarchy)
     link "$DOTFILES/hypr/caps_lock_tmux_prefix.lua" "$CONFIG/hypr/caps_lock_tmux_prefix.lua"

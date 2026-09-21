@@ -30,8 +30,9 @@ Then:
 
 1. Open Ghostty. It runs zsh, the macOS login shell; that is expected, and
    `zsh/zshrc` gives it the same aliases, prompt and tools as bash on Linux. Start tmux with `t`.
-2. Open Karabiner-Elements, go to Complex Modifications, Add rule, and enable
-   "Caps Lock as tmux prefix". Grant it Input Monitoring when asked.
+2. Open Karabiner-Elements once and approve it in System Settings > Privacy & Security (Input
+   Monitoring, and the driver extension). Re-run `install.sh`: it writes the "Caps Lock as tmux
+   prefix" rule straight into `karabiner.json`, so there is nothing to click in Add rule.
 3. Run `nvim`. LazyVim installs its plugins on first launch; wait for it to finish and restart.
 
 ### If it does not look like the Linux machine
@@ -49,7 +50,7 @@ Run `~/.dotfiles/install.sh --check` first. Beyond what it reports:
 - **Ctrl+Space does nothing.** macOS grabs it for "Select the previous input source". Turn that
   off in System Settings > Keyboard > Keyboard Shortcuts > Input Sources.
 - **Caps Lock does nothing but Ctrl+Space works.** Karabiner is not delivering the key. In
-  order: enable the rule (Complex Modifications > Add rule), approve Karabiner in System Settings
+  order: re-run `install.sh` so the rule is in `karabiner.json` (the check confirms it), approve Karabiner in System Settings
   > Privacy & Security (Input Monitoring for `karabiner_grabber`, and allow the driver extension
   when prompted), check the keyboard has "Modify events" ticked in Karabiner > Devices, and
   remove any `caps_lock` entry in Simple Modifications since that runs before the rule. Karabiner
