@@ -157,6 +157,14 @@ run_checks() {
   if [[ $PLATFORM == macos ]]; then
     if [[ -f $CONFIG/karabiner/karabiner.json ]] && grep -q 'Caps Lock sends Ctrl+Space' "$CONFIG/karabiner/karabiner.json"; then
       ok "Karabiner rule enabled"
+      if pgrep -q karabiner_grabber; then
+        ok "Karabiner grabber running"
+      else
+        warn "Karabiner is installed but its grabber is not running: open Karabiner-Elements and approve it in System Settings > Privacy & Security (Input Monitoring, and the driver extension)"
+      fi
+      if grep -q '"from": *{ *"key_code": *"caps_lock"' "$CONFIG/karabiner/karabiner.json" && grep -q 'simple_modifications' "$CONFIG/karabiner/karabiner.json"; then
+        echo "  note    If Karabiner > Simple Modifications also remaps caps_lock, remove that entry; it runs before this rule."
+      fi
     elif [[ -d /Applications/Karabiner-Elements.app ]]; then
       warn "Karabiner rule not enabled yet: Karabiner-Elements > Complex Modifications > Add rule > Caps Lock as tmux prefix"
     else

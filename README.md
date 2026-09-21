@@ -48,6 +48,12 @@ Run `~/.dotfiles/install.sh --check` first. Beyond what it reports:
   its git aliases are in `shell/git-aliases.sh`.
 - **Ctrl+Space does nothing.** macOS grabs it for "Select the previous input source". Turn that
   off in System Settings > Keyboard > Keyboard Shortcuts > Input Sources.
+- **Caps Lock does nothing but Ctrl+Space works.** Karabiner is not delivering the key. In
+  order: enable the rule (Complex Modifications > Add rule), approve Karabiner in System Settings
+  > Privacy & Security (Input Monitoring for `karabiner_grabber`, and allow the driver extension
+  when prompted), check the keyboard has "Modify events" ticked in Karabiner > Devices, and
+  remove any `caps_lock` entry in Simple Modifications since that runs before the rule. Karabiner
+  > EventViewer shows what Caps Lock actually sends; it should read `spacebar` with `left_control`.
 - **Alt shortcuts type odd characters.** Option is not acting as Alt. Make sure the Ghostty
   config is the linked one (`macos-option-as-alt = true`); a `~/Library/Application
   Support/com.mitchellh.ghostty/config` file would take precedence over `~/.config/ghostty`.
