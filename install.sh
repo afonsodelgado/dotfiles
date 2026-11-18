@@ -4,6 +4,7 @@
 #   git clone https://github.com/afonsodelgado/dotfiles ~/.dotfiles
 #   ~/.dotfiles/install.sh            install, then report what is wired up
 #   ~/.dotfiles/install.sh --check    only report: tools, versions, links, shell hook
+#   ~/.dotfiles/install.sh --configs-only   link and hook for this user, no packages or sudo
 #
 # Detects three platforms:
 #   macos    Homebrew packages, Ghostty, Karabiner for Caps Lock
@@ -192,7 +193,8 @@ run_checks() {
   fi
 }
 
-if [[ ${1:-} == --check ]]; then
+MODE="${1:-}"
+if [[ $MODE == --check ]]; then
   run_checks
   exit $STATUS
 fi
@@ -240,8 +242,6 @@ install_packages_linux() {
     for pkg in "${packages[@]}"; do
       sudo apt-get install -y "$pkg" || echo "  skip    $pkg (not in this release; see README)"
     done
-    link_debian_name bat batcat
-    link_debian_name fd fdfind
     mkdir -p "$HOME/.local/bin"
     command -v starship &> /dev/null || curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin"
     command -v mise &> /dev/null || curl https://mise.run | sh
@@ -253,21 +253,33 @@ install_packages_linux() {
   fi
 }
 
-case $PLATFORM in
-  macos)
-    if command -v brew &> /dev/null; then
-      echo "Installing Homebrew packages"
-      # A single failing item (an app already installed by hand, say) must not stop the
-      # configs below from being linked. The check at the end reports what is missing.
-      brew bundle --file="$DOTFILES/Brewfile" --no-upgrade \
-        || echo "  WARN    some Homebrew items failed; continuing with the configs"
-    else
-      echo "Homebrew not found; skipping packages. Install it, then re-run."
-    fi
-    ;;
-  linux) install_packages_linux ;;
-  omarchy) echo "Packages: Omarchy already provides them." ;;
-esac
+install_packages() {
+  case $PLATFORM in
+    macos)
+      if command -v brew &> /dev/null; then
+        echo "Installing Homebrew packages"
+        # A single failing item (an app already installed by hand, say) must not stop the
+        # configs below from being linked. The check at the end reports what is missing.
+        brew bundle --file="$DOTFILES/Brewfile" --no-upgrade \
+          || echo "  WARN    some Homebrew items failed; continuing with the configs"
+      else
+        echo "Homebrew not found; skipping packages. Install it, then re-run."
+      fi
+      ;;
+    linux) install_packages_linux ;;
+    omarchy) echo "Packages: Omarchy already provides them." ;;
+  esac
+}
+
+if [[ $MODE == --configs-only ]]; then
+  echo "Packages: skipped (--configs-only)."
+else
+  install_packages
+fi
+if [[ $PLATFORM == linux ]]; then
+  link_debian_name bat batcat
+  link_debian_name fd fdfind
+fi
 
 # ---------------------------------------------------------------------------
 # Configs

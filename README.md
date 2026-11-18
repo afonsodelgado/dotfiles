@@ -126,6 +126,18 @@ Connect from a plain terminal tab, not from inside a local tmux. Both use the sa
 local tmux would catch it first. Then start or attach with `t`. Yanks in Neovim reach the local
 clipboard through OSC 52.
 
+The prompt starts with `user@host` in yellow (red for root), and the tmux badge turns yellow with
+the same, so a server shell never looks like the local one. This holds over SSH and in any Linux
+shell without a display, including after `su -` or `sudo -i`, which clear the SSH variables.
+
+Every user needs their own install, since the links and the `~/.bashrc` hook live in their home.
+The packages are already there, so other users, root included, skip them:
+
+```bash
+git clone https://github.com/afonsodelgado/dotfiles ~/.dotfiles
+~/.dotfiles/install.sh --configs-only
+```
+
 ## What is here
 
 | Path | What | Notes for macOS |

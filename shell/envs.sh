@@ -20,6 +20,10 @@ export BAT_THEME=ansi
 export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
+if [[ $OSTYPE == linux* && -z ${WAYLAND_DISPLAY:-}${DISPLAY:-} ]]; then
+  export DOTFILES_SERVER=1
+fi
+
 case ":$PATH:" in
   *":$HOME/.local/bin:"*) ;;
   *) export PATH="$PATH:$HOME/.local/bin" ;;
