@@ -139,7 +139,6 @@ run_checks() {
     warn "$HOME/.tmux.conf exists; tmux reads it instead of $CONFIG/tmux/tmux.conf. Remove or rename it."
   fi
   check_link "$CONFIG/tmux/tmux.conf" "$DOTFILES/tmux/tmux.conf"
-  check_link "$CONFIG/tmux/latch-prefix.sh" "$DOTFILES/tmux/latch-prefix.sh"
   check_link "$CONFIG/starship.toml" "$DOTFILES/starship.toml"
 
   if [[ $PLATFORM == omarchy ]]; then
@@ -239,7 +238,6 @@ if [[ -e $HOME/.tmux.conf || -L $HOME/.tmux.conf ]]; then
   echo "  backup  $HOME/.tmux.conf -> $HOME/.tmux.conf.bak (it would shadow the tmux.conf in ~/.config)"
 fi
 link "$DOTFILES/tmux/tmux.conf" "$CONFIG/tmux/tmux.conf"
-link "$DOTFILES/tmux/latch-prefix.sh" "$CONFIG/tmux/latch-prefix.sh"
 link "$DOTFILES/starship.toml"  "$CONFIG/starship.toml"
 
 if [[ $PLATFORM == omarchy ]]; then

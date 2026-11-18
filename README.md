@@ -118,7 +118,7 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 |---|---|---|
 | `ghostty/` | Terminal config | Option is set to act as Alt, which the tmux bindings rely on. Font size raised from 9 to 13. |
 | `themes/tokyo-night/` | Colors for terminals and btop | On Omarchy the live theme is used instead. Elsewhere `THEME=... ./install.sh` picks one. |
-| `tmux/tmux.conf` | Prefix Ctrl+Space and Ctrl+B, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. The prefix latches; `tmux/latch-prefix.sh` is what makes it. |
+| `tmux/tmux.conf` | Prefix Ctrl+Space and Ctrl+B, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. |
 | `nvim/` | LazyVim config | Minus Omarchy's theme hot-reload. `jk` leaves insert mode. |
 | `starship.toml` | Prompt | Unchanged. |
 | `shell/` | Aliases, git aliases, and tmux layout functions shared by bash and zsh | `git-aliases.sh` is the oh-my-zsh git set (gst, gcmsg, gco...). Also sourced on the Linux machine. |
@@ -132,8 +132,8 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 ## Keys worth knowing
 
 tmux prefix is a tap of Caps Lock (Ctrl+B on macOS, Ctrl+Space on Linux; both work everywhere).
-It latches: one tap holds prefix mode open for as many commands as you like, and a second tap,
-or Escape, returns to typing. The status bar shows `PREFIX` while it is held.
+One tap arms it for a single command, the way tmux does by default. The status bar shows
+`PREFIX` while it is armed.
 
 | Keys | Action |
 |---|---|
