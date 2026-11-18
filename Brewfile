@@ -21,6 +21,7 @@ brew "neovim"
 brew "ripgrep"
 brew "fd"
 brew "lazygit"
+brew "tree-sitter-cli"
 brew "gh"
 
 # Extras Omarchy ships with

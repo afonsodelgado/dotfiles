@@ -24,7 +24,17 @@ elif [[ -d /usr/share/omarchy ]]; then
 else
   PLATFORM=linux
 fi
+HAS_DESKTOP=false
+if [[ $PLATFORM == macos || $(systemctl get-default 2> /dev/null) == graphical.target ]]; then
+  HAS_DESKTOP=true
+fi
 echo "Platform: $PLATFORM"
+[[ $HAS_DESKTOP == true ]] || echo "No desktop session: skipping keyd, foot and the Nerd Font."
+
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$PATH:$HOME/.local/bin" ;;
+esac
 
 # A fresh macOS shell does not have Homebrew on PATH until its shellenv line is run. Find it anyway.
 if [[ $PLATFORM == macos ]] && ! command -v brew &> /dev/null; then
@@ -115,7 +125,7 @@ run_checks() {
     else
       warn "JetBrainsMono Nerd Font not installed (brew install --cask font-jetbrains-mono-nerd-font)"
     fi
-  elif command -v fc-list &> /dev/null; then
+  elif [[ $HAS_DESKTOP == true ]] && command -v fc-list &> /dev/null; then
     if fc-list 2> /dev/null | grep -i 'JetBrainsMono.*Nerd' > /dev/null; then
       ok "JetBrainsMono Nerd Font"
     else
@@ -134,12 +144,12 @@ run_checks() {
   check_cmd rg
   check_cmd fd
   check_cmd lazygit
+  check_cmd tree-sitter 0.25
 
   if [[ -e $HOME/.tmux.conf || -L $HOME/.tmux.conf ]]; then
     warn "$HOME/.tmux.conf exists; tmux reads it instead of $CONFIG/tmux/tmux.conf. Remove or rename it."
   fi
   check_link "$CONFIG/tmux/tmux.conf" "$DOTFILES/tmux/tmux.conf"
-  check_link "$CONFIG/tmux/latch-prefix.sh" "$DOTFILES/tmux/latch-prefix.sh"
   check_link "$CONFIG/starship.toml" "$DOTFILES/starship.toml"
 
   if [[ $PLATFORM == omarchy ]]; then
@@ -190,23 +200,54 @@ fi
 # ---------------------------------------------------------------------------
 # Packages
 # ---------------------------------------------------------------------------
+link_debian_name() {
+  local name="$1" debian_name="$2"
+  if ! command -v "$name" &> /dev/null && command -v "$debian_name" &> /dev/null; then
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$(command -v "$debian_name")" "$HOME/.local/bin/$name"
+    echo "  link    $HOME/.local/bin/$name -> $debian_name"
+  fi
+}
+
+install_nerd_font() {
+  local dir="$HOME/.local/share/fonts/JetBrainsMonoNerd"
+  if fc-list 2> /dev/null | grep -qi 'JetBrainsMono.*Nerd'; then
+    return
+  fi
+  mkdir -p "$dir"
+  if curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz | tar -xJ -C "$dir"; then
+    fc-cache -f "$dir"
+    echo "  font    JetBrainsMono Nerd Font -> $dir"
+  else
+    echo "  WARN    JetBrainsMono Nerd Font download failed; see README"
+  fi
+}
+
 install_packages_linux() {
   if command -v pacman &> /dev/null; then
     echo "Installing packages with pacman"
     sudo pacman -S --needed --noconfirm \
-      tmux neovim starship zoxide fzf eza bat ripgrep fd lazygit btop mise jq \
+      tmux neovim starship zoxide fzf eza bat ripgrep fd lazygit tree-sitter-cli btop mise jq \
       ttf-jetbrains-mono-nerd foot ghostty keyd \
       || echo "  WARN    pacman failed; continuing with the configs"
   elif command -v apt-get &> /dev/null; then
     echo "Installing packages with apt (some may be missing on older releases)"
     sudo apt-get update
-    local pkg
-    for pkg in tmux neovim zoxide fzf eza bat ripgrep fd-find btop jq keyd fonts-jetbrains-mono; do
+    local pkg packages=(git curl unzip build-essential tmux neovim starship zoxide fzf eza bat ripgrep fd-find lazygit tree-sitter-cli btop jq)
+    if [[ $HAS_DESKTOP == true ]]; then
+      packages+=(keyd foot fontconfig xz-utils)
+    fi
+    for pkg in "${packages[@]}"; do
       sudo apt-get install -y "$pkg" || echo "  skip    $pkg (not in this release; see README)"
     done
-    command -v starship &> /dev/null || curl -sS https://starship.rs/install.sh | sh
+    link_debian_name bat batcat
+    link_debian_name fd fdfind
+    mkdir -p "$HOME/.local/bin"
+    command -v starship &> /dev/null || curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin"
     command -v mise &> /dev/null || curl https://mise.run | sh
-    echo "  note    lazygit, ghostty and the Nerd Font are not in apt; see README."
+    if [[ $HAS_DESKTOP == true ]]; then
+      install_nerd_font
+    fi
   else
     echo "No pacman or apt found. Install the packages listed in Brewfile manually."
   fi
@@ -239,7 +280,6 @@ if [[ -e $HOME/.tmux.conf || -L $HOME/.tmux.conf ]]; then
   echo "  backup  $HOME/.tmux.conf -> $HOME/.tmux.conf.bak (it would shadow the tmux.conf in ~/.config)"
 fi
 link "$DOTFILES/tmux/tmux.conf" "$CONFIG/tmux/tmux.conf"
-link "$DOTFILES/tmux/latch-prefix.sh" "$CONFIG/tmux/latch-prefix.sh"
 link "$DOTFILES/starship.toml"  "$CONFIG/starship.toml"
 
 if [[ $PLATFORM == omarchy ]]; then
@@ -282,7 +322,6 @@ case $PLATFORM in
     KARABINER_JSON="$CONFIG/karabiner/karabiner.json"
     RULE="$DOTFILES/karabiner/caps-lock-tmux-prefix.json"
     mkdir -p "$KARABINER_DIR"
-<<<<<<< Updated upstream
     cp "$RULE" "$KARABINER_DIR/"
     # Karabiner reloads karabiner.json on change, so the rule can be enabled directly:
     # replace any earlier copy in the selected profile and append the current one.
@@ -298,18 +337,6 @@ case $PLATFORM in
     else
       echo "Karabiner rule copied. Open Karabiner-Elements once (it creates karabiner.json), then re-run install.sh to enable it."
     fi
-||||||| Stash base
-    cp "$DOTFILES/karabiner/caps-lock-tmux-prefix.json" "$KARABINER_DIR/"
-    echo "Karabiner rule copied. Enable it in Karabiner-Elements > Complex Modifications > Add rule."
-=======
-    cp "$DOTFILES/karabiner/caps-lock-tmux-prefix.json" "$KARABINER_DIR/"
-    if [[ -f $CONFIG/karabiner/karabiner.json ]]; then
-      echo "Karabiner rule copied. Enable it in Karabiner-Elements > Complex Modifications > Add rule."
-    else
-      "$DOTFILES/karabiner/write-profile.py" && echo "Karabiner profile written with the rule enabled."
-    fi
-    echo "Karabiner needs Input Monitoring and its driver approved on first launch."
->>>>>>> Stashed changes
     ;;
   omarchy)
     link "$DOTFILES/hypr/caps_lock_tmux_prefix.lua" "$CONFIG/hypr/caps_lock_tmux_prefix.lua"
@@ -317,8 +344,12 @@ case $PLATFORM in
     command -v hyprctl &> /dev/null && hyprctl reload > /dev/null && echo "Hyprland reloaded."
     ;;
   linux)
-    echo "Caps Lock as tmux prefix needs keyd (root):"
-    echo "  sudo mkdir -p /etc/keyd && sudo cp $DOTFILES/keyd/default.conf /etc/keyd/ && sudo systemctl enable --now keyd"
+    if [[ $HAS_DESKTOP == true ]]; then
+      echo "Caps Lock as tmux prefix needs keyd (root):"
+      echo "  sudo mkdir -p /etc/keyd && sudo cp $DOTFILES/keyd/default.conf /etc/keyd/ && sudo systemctl enable --now keyd"
+    else
+      echo "No desktop: Caps Lock is remapped on the machine you connect from, not here."
+    fi
     ;;
 esac
 

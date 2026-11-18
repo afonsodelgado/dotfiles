@@ -4,7 +4,7 @@ The parts of my [Omarchy](https://omarchy.org) setup that work anywhere: termina
 (LazyVim), starship prompt, and shell aliases. Plus the personal layer on top of Omarchy itself, so
 a fresh Omarchy machine ends up identical.
 
-`install.sh` detects the platform (macOS, Omarchy, other Linux), symlinks configs into `~/.config`,
+`install.sh` detects the platform (macOS, Omarchy, other Linux, desktop or server), symlinks configs into `~/.config`,
 hooks the shell, installs packages where it can, and sets up Caps Lock as the tmux prefix. It is
 safe to re-run. Anything it replaces is moved to `*.bak`. It ends with a check of tools, versions
 and links; `install.sh --check` runs only that.
@@ -30,18 +30,9 @@ Then:
 
 1. Open Ghostty. It runs zsh, the macOS login shell; that is expected, and
    `zsh/zshrc` gives it the same aliases, prompt and tools as bash on Linux. Start tmux with `t`.
-<<<<<<< Updated upstream
 2. Open Karabiner-Elements once and approve it in System Settings > Privacy & Security (Input
    Monitoring, and the driver extension). Re-run `install.sh`: it writes the "Caps Lock as tmux
    prefix" rule straight into `karabiner.json`, so there is nothing to click in Add rule.
-||||||| Stash base
-2. Open Karabiner-Elements, go to Complex Modifications, Add rule, and enable
-   "Caps Lock as tmux prefix". Grant it Input Monitoring when asked.
-=======
-2. Open Karabiner-Elements once and grant it Input Monitoring and the driver extension when
-   asked. `install.sh` already writes the profile with "Caps Lock as tmux prefix" enabled, so
-   there is no rule to add by hand unless you already had a `karabiner.json`.
->>>>>>> Stashed changes
 3. Run `nvim`. LazyVim installs its plugins on first launch; wait for it to finish and restart.
 
 ### If it does not look like the Linux machine
@@ -107,13 +98,17 @@ git clone https://github.com/afonsodelgado/dotfiles ~/.dotfiles
 sudo mkdir -p /etc/keyd && sudo cp ~/.dotfiles/keyd/default.conf /etc/keyd/ && sudo systemctl enable --now keyd
 ```
 
-The installer uses `pacman` or `apt` for packages. On Arch everything is in the repos. On
-Debian/Ubuntu a few things need a manual step afterwards:
+The installer uses `pacman` or `apt` for packages. On Arch and Ubuntu 26.04 everything is in the
+repos at versions the configs need. On Ubuntu and Debian it also:
 
-- **lazygit**: https://github.com/jesseduffield/lazygit/releases
-- **Ghostty**: https://ghostty.org/download (foot is installed from apt and works on Wayland)
-- **JetBrainsMono Nerd Font**: https://www.nerdfonts.com/font-downloads, unzip into `~/.local/share/fonts`, run `fc-cache -f`
-- `starship` and `mise` are installed by their official scripts if apt lacks them.
+- links `bat` and `fd` in `~/.local/bin`, since apt installs them as `batcat` and `fdfind`;
+- installs `mise` with its official script, and `starship` too if apt lacks it;
+- downloads the JetBrainsMono Nerd Font into `~/.local/share/fonts` on a desktop.
+
+Older releases may lack `lazygit` or ship a tmux, Neovim or fzf older than the check wants. Get
+those from their upstream releases; the check at the end names each one.
+
+Ghostty is not in apt: https://ghostty.org/download. foot is, and works on Wayland.
 
 The last command sets up **keyd** so a Caps Lock tap sends Ctrl+Space. Unlike the Omarchy and
 Karabiner versions this applies in every app, since keyd sits below the desktop. Caps Lock's own
@@ -121,13 +116,23 @@ toggle is gone; hold Shift for capitals.
 
 Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both configs are linked.
 
+### On a server
+
+Same two commands, without keyd. The installer sees there is no desktop (`systemctl
+get-default` is not `graphical.target`) and skips keyd, foot and the Nerd Font: the terminal
+on the machine you connect from draws the icons and remaps Caps Lock.
+
+Connect from a plain terminal tab, not from inside a local tmux. Both use the same prefix, so a
+local tmux would catch it first. Then start or attach with `t`. Yanks in Neovim reach the local
+clipboard through OSC 52.
+
 ## What is here
 
 | Path | What | Notes for macOS |
 |---|---|---|
 | `ghostty/` | Terminal config | Option is set to act as Alt, which the tmux bindings rely on. Font size raised from 9 to 13. |
 | `themes/tokyo-night/` | Colors for terminals and btop | On Omarchy the live theme is used instead. Elsewhere `THEME=... ./install.sh` picks one. |
-| `tmux/tmux.conf` | Prefix Ctrl+Space and Ctrl+B, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. The prefix latches; `tmux/latch-prefix.sh` is what makes it. |
+| `tmux/tmux.conf` | Prefix Ctrl+Space and Ctrl+B, Alt-based pane and window keys, vi copy mode | Unchanged except `?` uses tmux's own key list instead of the Omarchy menu. |
 | `nvim/` | LazyVim config | Minus Omarchy's theme hot-reload. `jk` leaves insert mode. |
 | `starship.toml` | Prompt | Unchanged. |
 | `shell/` | Aliases, git aliases, and tmux layout functions shared by bash and zsh | `git-aliases.sh` is the oh-my-zsh git set (gst, gcmsg, gco...). Also sourced on the Linux machine. |
@@ -135,20 +140,14 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 | `foot/` | Terminal config for Wayland Linux | Same padding and CSI-u bindings as the others. |
 | `hypr/` | Caps Lock as tmux prefix on Omarchy/Hyprland | Terminal windows only. Loaded by one `require` in `hyprland.lua`. |
 | `keyd/` | Caps Lock as tmux prefix on other Linux | System-wide. |
-<<<<<<< Updated upstream
-| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty only. |
-||||||| Stash base
-| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty and Alacritty only. |
-=======
-| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty and Alacritty only. Sends Ctrl+B, since macOS keeps Ctrl+Space for itself. |
->>>>>>> Stashed changes
+| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty only. Sends Ctrl+B, since macOS keeps Ctrl+Space for itself. |
 | `Brewfile` | Everything the above needs, on macOS | Linux uses pacman/apt inside `install.sh`. |
 
 ## Keys worth knowing
 
 tmux prefix is a tap of Caps Lock (Ctrl+B on macOS, Ctrl+Space on Linux; both work everywhere).
-It latches: one tap holds prefix mode open for as many commands as you like, and a second tap,
-or Escape, returns to typing. The status bar shows `PREFIX` while it is held.
+One tap arms it for a single command, the way tmux does by default. The status bar shows
+`PREFIX` while it is armed.
 
 | Keys | Action |
 |---|---|
