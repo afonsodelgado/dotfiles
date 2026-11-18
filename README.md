@@ -30,18 +30,9 @@ Then:
 
 1. Open Ghostty. It runs zsh, the macOS login shell; that is expected, and
    `zsh/zshrc` gives it the same aliases, prompt and tools as bash on Linux. Start tmux with `t`.
-<<<<<<< Updated upstream
 2. Open Karabiner-Elements once and approve it in System Settings > Privacy & Security (Input
    Monitoring, and the driver extension). Re-run `install.sh`: it writes the "Caps Lock as tmux
    prefix" rule straight into `karabiner.json`, so there is nothing to click in Add rule.
-||||||| Stash base
-2. Open Karabiner-Elements, go to Complex Modifications, Add rule, and enable
-   "Caps Lock as tmux prefix". Grant it Input Monitoring when asked.
-=======
-2. Open Karabiner-Elements once and grant it Input Monitoring and the driver extension when
-   asked. `install.sh` already writes the profile with "Caps Lock as tmux prefix" enabled, so
-   there is no rule to add by hand unless you already had a `karabiner.json`.
->>>>>>> Stashed changes
 3. Run `nvim`. LazyVim installs its plugins on first launch; wait for it to finish and restart.
 
 ### If it does not look like the Linux machine
@@ -135,13 +126,7 @@ Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both config
 | `foot/` | Terminal config for Wayland Linux | Same padding and CSI-u bindings as the others. |
 | `hypr/` | Caps Lock as tmux prefix on Omarchy/Hyprland | Terminal windows only. Loaded by one `require` in `hyprland.lua`. |
 | `keyd/` | Caps Lock as tmux prefix on other Linux | System-wide. |
-<<<<<<< Updated upstream
-| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty only. |
-||||||| Stash base
-| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty and Alacritty only. |
-=======
-| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty and Alacritty only. Sends Ctrl+B, since macOS keeps Ctrl+Space for itself. |
->>>>>>> Stashed changes
+| `karabiner/` | Caps Lock as tmux prefix on macOS | Ghostty only. Sends Ctrl+B, since macOS keeps Ctrl+Space for itself. |
 | `Brewfile` | Everything the above needs, on macOS | Linux uses pacman/apt inside `install.sh`. |
 
 ## Keys worth knowing

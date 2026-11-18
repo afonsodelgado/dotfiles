@@ -282,7 +282,6 @@ case $PLATFORM in
     KARABINER_JSON="$CONFIG/karabiner/karabiner.json"
     RULE="$DOTFILES/karabiner/caps-lock-tmux-prefix.json"
     mkdir -p "$KARABINER_DIR"
-<<<<<<< Updated upstream
     cp "$RULE" "$KARABINER_DIR/"
     # Karabiner reloads karabiner.json on change, so the rule can be enabled directly:
     # replace any earlier copy in the selected profile and append the current one.
@@ -298,18 +297,6 @@ case $PLATFORM in
     else
       echo "Karabiner rule copied. Open Karabiner-Elements once (it creates karabiner.json), then re-run install.sh to enable it."
     fi
-||||||| Stash base
-    cp "$DOTFILES/karabiner/caps-lock-tmux-prefix.json" "$KARABINER_DIR/"
-    echo "Karabiner rule copied. Enable it in Karabiner-Elements > Complex Modifications > Add rule."
-=======
-    cp "$DOTFILES/karabiner/caps-lock-tmux-prefix.json" "$KARABINER_DIR/"
-    if [[ -f $CONFIG/karabiner/karabiner.json ]]; then
-      echo "Karabiner rule copied. Enable it in Karabiner-Elements > Complex Modifications > Add rule."
-    else
-      "$DOTFILES/karabiner/write-profile.py" && echo "Karabiner profile written with the rule enabled."
-    fi
-    echo "Karabiner needs Input Monitoring and its driver approved on first launch."
->>>>>>> Stashed changes
     ;;
   omarchy)
     link "$DOTFILES/hypr/caps_lock_tmux_prefix.lua" "$CONFIG/hypr/caps_lock_tmux_prefix.lua"
