@@ -4,7 +4,7 @@ The parts of my [Omarchy](https://omarchy.org) setup that work anywhere: termina
 (LazyVim), starship prompt, and shell aliases. Plus the personal layer on top of Omarchy itself, so
 a fresh Omarchy machine ends up identical.
 
-`install.sh` detects the platform (macOS, Omarchy, other Linux), symlinks configs into `~/.config`,
+`install.sh` detects the platform (macOS, Omarchy, other Linux, desktop or server), symlinks configs into `~/.config`,
 hooks the shell, installs packages where it can, and sets up Caps Lock as the tmux prefix. It is
 safe to re-run. Anything it replaces is moved to `*.bak`. It ends with a check of tools, versions
 and links; `install.sh --check` runs only that.
@@ -98,19 +98,33 @@ git clone https://github.com/afonsodelgado/dotfiles ~/.dotfiles
 sudo mkdir -p /etc/keyd && sudo cp ~/.dotfiles/keyd/default.conf /etc/keyd/ && sudo systemctl enable --now keyd
 ```
 
-The installer uses `pacman` or `apt` for packages. On Arch everything is in the repos. On
-Debian/Ubuntu a few things need a manual step afterwards:
+The installer uses `pacman` or `apt` for packages. On Arch and Ubuntu 26.04 everything is in the
+repos at versions the configs need. On Ubuntu and Debian it also:
 
-- **lazygit**: https://github.com/jesseduffield/lazygit/releases
-- **Ghostty**: https://ghostty.org/download (foot is installed from apt and works on Wayland)
-- **JetBrainsMono Nerd Font**: https://www.nerdfonts.com/font-downloads, unzip into `~/.local/share/fonts`, run `fc-cache -f`
-- `starship` and `mise` are installed by their official scripts if apt lacks them.
+- links `bat` and `fd` in `~/.local/bin`, since apt installs them as `batcat` and `fdfind`;
+- installs `mise` with its official script, and `starship` too if apt lacks it;
+- downloads the JetBrainsMono Nerd Font into `~/.local/share/fonts` on a desktop.
+
+Older releases may lack `lazygit` or ship a tmux, Neovim or fzf older than the check wants. Get
+those from their upstream releases; the check at the end names each one.
+
+Ghostty is not in apt: https://ghostty.org/download. foot is, and works on Wayland.
 
 The last command sets up **keyd** so a Caps Lock tap sends Ctrl+Space. Unlike the Omarchy and
 Karabiner versions this applies in every app, since keyd sits below the desktop. Caps Lock's own
 toggle is gone; hold Shift for capitals.
 
 Pick a terminal: **foot** on Wayland desktops, **Ghostty** anywhere. Both configs are linked.
+
+### On a server
+
+Same two commands, without keyd. The installer sees there is no desktop (`systemctl
+get-default` is not `graphical.target`) and skips keyd, foot and the Nerd Font: the terminal
+on the machine you connect from draws the icons and remaps Caps Lock.
+
+Connect from a plain terminal tab, not from inside a local tmux. Both use the same prefix, so a
+local tmux would catch it first. Then start or attach with `t`. Yanks in Neovim reach the local
+clipboard through OSC 52.
 
 ## What is here
 
